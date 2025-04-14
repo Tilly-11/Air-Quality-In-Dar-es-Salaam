@@ -1,0 +1,24 @@
+#Performing a Walk-Forward Validation
+y_pred_wfv = pd.Series()
+history = y_train.copy()
+for i in range(len(y_test)):
+    model = AutoReg(history, lags=best_p).fit()
+    next_step = model.forecast()
+    y_pred_wfv = y_pred_wfv.append(next_step)
+    history = history.append(y_test[next_step.index])
+y_pred_wfv.name = "prediction"
+y_pred_wfv.index.name = "timestamp"
+y_pred_wfv.head()
+
+
+#Plotly express plot of origional test set against predicted values
+df_pred_test = pd.DataFrame(
+    {"y_test": y_test, "y_pred_wfv": y_pred_wfv}
+)
+fig = px.line(df_pred_test, labels=("values:P2"))
+fig.update_layout(
+    title="Dar es Salaam, WFV Predictions",
+    xaxis_title="Date",
+    yaxis_title="PM2.5 Level",
+)
+fig.show()
