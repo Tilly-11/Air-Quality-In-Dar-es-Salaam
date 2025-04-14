@@ -15,14 +15,7 @@ Time series models like the one developed in this project are widely used across
 
 ---
 
-🔗 Future Scope  
-- Expansion to include Lagos and Dar es Salaam  
-- Integration of external weather APIs  
-- Deployment of a real-time PM 2.5 prediction dashboard  
-
----
-
-**🚀 Getting Started ** 
+**🚀 Getting Started** 
 To run the project locally:
 1. Clone this repository  
 2. Install required dependencies:  
@@ -33,7 +26,7 @@ To run the project locally:
 
 ---
 
-**📬 Feedback  **
+**📬 Feedback**
 Have suggestions or improvements? Feel free to open an issue or reach out!
 
 ---
