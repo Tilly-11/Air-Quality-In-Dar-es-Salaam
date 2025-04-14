@@ -1,0 +1,24 @@
+#Connecting to MongoDB Server
+client = MongoClient(host="localhost", port=27017)
+db = client["air-quality"]
+dar = db["dar-es-salaam"]
+
+#Overview of data
+dar.find_one({})
+
+#Unique measurements available
+dar.distinct("metadata.measurement")
+
+#Unique Sites Available
+sites = dar.distinct("metadata.site")
+sites
+
+#Count of Sites(To choose site with largest records)
+result = dar.aggregate(
+    [
+        {"$group":{"_id":"$metadata.site", "count":{"$count":{}}}}
+    ]
+)
+readings_per_site = list(result)
+readings_per_site
+
