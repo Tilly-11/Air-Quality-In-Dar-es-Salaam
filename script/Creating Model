@@ -1,0 +1,60 @@
+#Establishing Baseline
+y_train_mean = y_train.mean()
+y_pred_baseline = [y_train_mean] * len(y_train)
+mae_baseline = mean_absolute_error(y_train, y_pred_baseline)
+
+print("Mean P2 Reading:", y_train_mean)
+print("Baseline MAE:", mae_baseline)
+
+
+
+# Create range to test different lags
+p_params = range(1, 31)
+
+# Create empty list to hold mean absolute error scores
+maes = []
+
+--Iterate through all values of p in `p_params`
+for p in p_params:
+    -- Build model
+    model = AutoReg(y_train, lags=p).fit()
+
+    -- Make predictions on training data, dropping null values caused by lag
+    y_pred = model.predict().dropna()
+
+    --Calculate mean absolute error for training data vs predictions
+    mae = mean_absolute_error(y_train.iloc[p:], y_pred)
+
+    -- Append `mae` to list `maes`
+    maes.append(mae)
+
+-- Put list `maes` into Series with index `p_params`
+mae_series = pd.Series(maes, name="mae", index=p_params)
+
+-- Inspect head of Series
+mae_series.head()
+
+
+
+#Building model with best hyperparameter
+best_p = 26
+best_model = AutoReg(y_train, lags=best_p).fit()
+
+#Calculate training residuals
+y_train_resid = best_model.resid
+y_train_resid.name = "residuals"
+y_train_resid.head()
+
+# Plot histogram of residuals
+y_train_resid.plot(kind="hist")
+plt.xlabel("Residuals")
+plt.ylabel("Frequency")
+plt.title("Best Model, Training Residuals")
+
+#Creating a ACF plot of residuals
+fig, ax = plt.subplots(figsize=(15, 6))
+plot_acf(y_train_resid, ax=ax)
+plt.xlabel("Lag [hours]")
+plt.ylabel("Correlation Coefficient")
+plt.title("Dar es Salaam, Training Residuals ACF")
+
