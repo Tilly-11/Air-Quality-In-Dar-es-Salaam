@@ -22,3 +22,59 @@ result = dar.aggregate(
 readings_per_site = list(result)
 readings_per_site
 
+#Building Wrengle Function
+def wrangle(collection):
+    result = collection.find(
+    {"metadata.measurement":"P2", "metadata.site":11},
+    projection={"P2":1, "timestamp":1, "_id":0}
+    )
+    
+    #create dataFrame
+    y = pd.DataFrame(result).set_index("timestamp")
+    
+    #Localising the reading timestamp
+    y.index = y.index.tz_localize("UTC").tz_convert("Africa/Dar_es_Salaam")
+    
+    #Removing P2 values > 100
+    y = y[y["P2"]< 100]
+    
+    #Resampling data to create hourly readings
+    y = y["P2"].resample("1H").mean().fillna(method = "ffill")
+    
+    return y
+
+#Creating a series plot
+fig, ax = plt.subplots(figsize=(15, 6))
+y.plot(ax=ax)
+plt.xlabel("Date")
+plt.ylabel("PM2.5 Level")
+plt.title("Dar es Salaam PM2.5 Levels")
+
+#Plotting the rolling average of y
+fig, ax = plt.subplots(figsize=(15, 6))
+y.rolling(168).mean().plot(ax=ax)
+plt.xlabel("Date")
+plt.ylabel("PM2.5 Level")
+plt.title("Dar es Salaam PM2.5 Levels, 7-Day Rolling Average")
+
+#Creating an ACF Plot of y
+fig, ax = plt.subplots(figsize=(15, 6))
+plot_acf(y, ax=ax)
+plt.xlabel("Lag [hours]")
+plt.ylabel("Correlation Coefficient")
+plt.title("Dar es Salaam PM2.5 Readings, ACF")
+
+#Creating a PACF plot of y
+fig, ax = plt.subplots(figsize=(15, 6))
+plot_pacf(y, ax=ax)
+plt.xlabel("Lag [hours]")
+plt.ylabel("Correlation Coefficient")
+plt.title("Dar es Salaam PM2.5 Readings, PACF")
+
+#Spliting data into Training and test sets(this can easily be done using "train_test_split")
+cutoff_test = int(len(y)* 0.90)
+y_train = y[:cutoff_test]
+y_test = y[cutoff_test:]
+print("y_train shape:", y_train.shape)
+print("y_test shape:", y_test.shape)
+
