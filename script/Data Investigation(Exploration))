@@ -71,7 +71,7 @@ plt.xlabel("Lag [hours]")
 plt.ylabel("Correlation Coefficient")
 plt.title("Dar es Salaam PM2.5 Readings, PACF")
 
-#Spliting data into Training and test sets(this can easily be done using "train_test_split")
+#Spliting data into Training and test sets
 cutoff_test = int(len(y)* 0.90)
 y_train = y[:cutoff_test]
 y_test = y[cutoff_test:]
